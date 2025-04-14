@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Appointment Plugin{% endblock %}
+
+{% block content %}
+    <h5>Appointments Calendar</h5>
+
+    <button id="addAppointmentBtn" class="btn btn-primary" style="float: left; margin: 20px;">
+        + Add Appointment
+    </button>
+
+    <div id="calendar"></div>
+
+    <div class="modal fade" id="appointmentModal" tabindex="-1" role="dialog" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="appointmentModalLabel">Add Appointment</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="appointmentForm">
+              <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="title" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>Start Time</label>
+                <input type="datetime-local" id="start_time" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>End Time</label>
+                <input type="datetime-local" id="end_time" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>Color</label>
+                <input type="color" id="color" class="form-control" value="#007bff">
+              </div>
+              <input type="hidden" id="user_id" value="1"> <!-- Default user ID -->
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveAppointmentBtn">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
+{% endblock %}
