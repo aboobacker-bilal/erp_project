@@ -16,7 +16,7 @@ $(document).ready(function () {
         editable: true,
         selectable: true,
         eventLimit: true,
-        events: '/api/appointments/',
+        events: '/api/appointments/', // this must match your Flask route
         eventColor: '#66ccff',
         eventRender: function (event, element) {
             if (event.description) {
@@ -33,7 +33,7 @@ $(document).ready(function () {
     // Save appointment
     $('#saveAppointmentBtn').click(function () {
         const title = $('#title').val();
-        const start_time = $('#start_time').val();
+        const start_time = $('#start_time').val(); // ISO string from datetime-local input
         const end_time = $('#end_time').val();
         const color = $('#color').val();
         const user_id = $('#user_id').val();
@@ -49,8 +49,8 @@ $(document).ready(function () {
             contentType: 'application/json',
             data: JSON.stringify({
                 title: title,
-                start_time: start_time,
-                end_time: end_time,
+                start: start_time,
+                end: end_time,
                 color: color,
                 user_id: user_id
             }),

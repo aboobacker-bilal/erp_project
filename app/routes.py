@@ -16,41 +16,43 @@ def appointments_page():
     return render_template('index.html')
 
 
-@appointment_bp.route('/api/appointments/', methods=['GET', 'POST'])
-def appointments():
-    if request.method == 'POST':
-        data = request.get_json()
-        print("Received data:", data)
-        try:
-            title = data['title']
-            start = datetime.fromisoformat(data['start'])
-            end = datetime.fromisoformat(data['end'])
-            color = data['color']
-            draggable = data.get('draggable', True)
+@appointment_bp.route('/', methods=['GET'])
+def get_appointments():
+    appointments = Appointment.query.all()
+    return jsonify([
+        {
+            "id": appt.id,
+            "title": appt.title,
+            "start": appt.start_time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "end": appt.end_time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "color": appt.color
+        } for appt in appointments
+    ])
 
-            new_appointment = Appointment(
-                title=title,
-                start_time=start,
-                end_time=end,
-                color=color,
-                draggable=draggable,
-                user_id=1
-            )
-            db.session.add(new_appointment)
-            db.session.commit()
-            return jsonify({'message': 'Appointment created'}), 201
-        except Exception as e:
-            print("Error saving appointment:", e)
-            return jsonify({"error": str(e)}), 400
 
-    else:
-        appointments = Appointment.query.all()
-        return jsonify([
-            {
-                "id": appt.id,
-                "title": appt.title,
-                "start": appt.start_time.strftime("%Y-%m-%dT%H:%M:%S"),
-                "end": appt.end_time.strftime("%Y-%m-%dT%H:%M:%S"),
-                "color": appt.color
-            } for appt in appointments
-        ])
+@appointment_bp.route('/', methods=['POST'])
+def create_appointment():
+    data = request.get_json()
+    print("recived data", data)
+    try:
+        title = data['title']
+        start = datetime.fromisoformat(data['start'])
+        end = datetime.fromisoformat(data['end'])
+        color = data['color']
+        draggable = data.get('draggable', True)
+
+        new_appointment = Appointment(
+            title=title,
+            start_time=start,
+            end_time=end,
+            color=color,
+            draggable=draggable,
+            user_id=1
+        )
+
+        db.session.add(new_appointment)
+        db.session.commit()
+        return jsonify({'message': 'Appointment created'}), 201
+    except Exception as e:
+        print("Error saving appointment:", e)
+        return jsonify({"error": str(e)}), 400
