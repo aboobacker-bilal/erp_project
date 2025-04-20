@@ -1,5 +1,6 @@
 $(document).ready(function () {
-    // Initialize FullCalendar
+    let selectedStart, selectedEnd;
+
     $('#calendar').fullCalendar({
         header: {
             left: 'prev,next today',
@@ -15,9 +16,20 @@ $(document).ready(function () {
         },
         editable: true,
         selectable: true,
+        selectHelper: true,
         eventLimit: true,
-        events: '/api/appointments/', // this must match your Flask route
         eventColor: '#66ccff',
+        events: '/api/appointments/',
+        select: function (start, end) {
+            selectedStart = start;
+            selectedEnd = end;
+
+            $('#start_time').val(start.format('YYYY-MM-DDTHH:mm'));
+            $('#end_time').val(end.format('YYYY-MM-DDTHH:mm'));
+
+            $('#appointmentModal').modal('show');
+        },
+
         eventRender: function (event, element) {
             if (event.description) {
                 element.find('.fc-title').append("<br/><span class='fc-description'>" + event.description + "</span>");
@@ -25,15 +37,13 @@ $(document).ready(function () {
         }
     });
 
-    // Show modal on button click
     $('#addAppointmentBtn').click(function () {
         $('#appointmentModal').modal('show');
     });
 
-    // Save appointment
     $('#saveAppointmentBtn').click(function () {
         const title = $('#title').val();
-        const start_time = $('#start_time').val(); // ISO string from datetime-local input
+        const start_time = $('#start_time').val();
         const end_time = $('#end_time').val();
         const color = $('#color').val();
         const user_id = $('#user_id').val();
