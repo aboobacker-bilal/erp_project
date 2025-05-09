@@ -1,6 +1,4 @@
 $(document).ready(function () {
-    let selectedStart, selectedEnd;
-
     $('#calendar').fullCalendar({
         header: {
             left: 'prev,next today',
@@ -19,25 +17,30 @@ $(document).ready(function () {
         selectHelper: true,
         eventLimit: true,
         eventColor: '#66ccff',
-        events: '/api/appointments/',
-        select: function (start, end) {
-            selectedStart = start;
-            selectedEnd = end;
-
-            $('#start_time').val(start.format('YYYY-MM-DDTHH:mm'));
-            $('#end_time').val(end.format('YYYY-MM-DDTHH:mm'));
-
-            $('#appointmentModal').modal('show');
+        events: {
+            url: '/api/appointments/',
+            method: 'GET',
+            failure: function() {
+                alert('There was an error fetching events!');
+            }
         },
-
-        eventRender: function (event, element) {
+        eventRender: function(event, element) {
             if (event.description) {
                 element.find('.fc-title').append("<br/><span class='fc-description'>" + event.description + "</span>");
             }
+        },
+        select: function(start, end) {
+            const now = moment();
+            $('#start_time').val(now.format('YYYY-MM-DDTHH:mm'));
+            $('#end_time').val(now.add(1, 'hour').format('YYYY-MM-DDTHH:mm'));
+            $('#appointmentModal').modal('show');
         }
     });
 
     $('#addAppointmentBtn').click(function () {
+        const now = moment();
+        $('#start_time').val(now.format('YYYY-MM-DDTHH:mm'));
+        $('#end_time').val(now.add(1, 'hour').format('YYYY-MM-DDTHH:mm'));
         $('#appointmentModal').modal('show');
     });
 

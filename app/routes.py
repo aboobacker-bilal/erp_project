@@ -11,48 +11,33 @@ def home():
     return render_template('index.html')
 
 
-@appointment_bp.route('/')
-def appointments_page():
-    return render_template('index.html')
+@appointment_bp.route('/', methods=['GET', 'POST'])
+def handle_appointments():
+    if request.method == 'POST':
+        data = request.get_json()
+        try:
+            new_appointment = Appointment(
+                title=data['title'],
+                start_time=datetime.fromisoformat(data['start']),
+                end_time=datetime.fromisoformat(data['end']),
+                color=data['color'],
+                draggable=data.get('draggable', True),
+                user_id=1
+            )
+            db.session.add(new_appointment)
+            db.session.commit()
+            return jsonify({'message': 'Appointment created'}), 201
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
 
-
-@appointment_bp.route('/', methods=['GET'])
-def get_appointments():
-    appointments = Appointment.query.all()
-    return jsonify([
-        {
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        appointments = Appointment.query.all()
+        return jsonify([{
             "id": appt.id,
             "title": appt.title,
             "start": appt.start_time.strftime("%Y-%m-%dT%H:%M:%S"),
             "end": appt.end_time.strftime("%Y-%m-%dT%H:%M:%S"),
             "color": appt.color
-        } for appt in appointments
-    ])
+        } for appt in appointments])
 
-
-@appointment_bp.route('/', methods=['POST'])
-def create_appointment():
-    data = request.get_json()
-    print("recived data", data)
-    try:
-        title = data['title']
-        start = datetime.fromisoformat(data['start'])
-        end = datetime.fromisoformat(data['end'])
-        color = data['color']
-        draggable = data.get('draggable', True)
-
-        new_appointment = Appointment(
-            title=title,
-            start_time=start,
-            end_time=end,
-            color=color,
-            draggable=draggable,
-            user_id=1
-        )
-
-        db.session.add(new_appointment)
-        db.session.commit()
-        return jsonify({'message': 'Appointment created'}), 201
-    except Exception as e:
-        print("Error saving appointment:", e)
-        return jsonify({"error": str(e)}), 400
+    return render_template('index.html')
