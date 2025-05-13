@@ -41,3 +41,28 @@ def handle_appointments():
         } for appt in appointments])
 
     return render_template('index.html')
+
+
+@appointment_bp.route('/<int:appointment_id>', methods=['PUT', 'DELETE'])
+def handle_appointment(appointment_id):
+    appointment = Appointment.query.get_or_404(appointment_id)
+
+    if request.method == 'PUT':
+        data = request.get_json()
+        try:
+            appointment.title = data['title']
+            appointment.start_time = datetime.fromisoformat(data['start'])
+            appointment.end_time = datetime.fromisoformat(data['end'])
+            appointment.color = data.get('color', appointment.color)
+            db.session.commit()
+            return jsonify({'message': 'Appointment updated'}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+
+    elif request.method == 'DELETE':
+        try:
+            db.session.delete(appointment)
+            db.session.commit()
+            return jsonify({'message': 'Appointment deleted'}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400

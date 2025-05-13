@@ -20,6 +20,7 @@
           </div>
           <div class="modal-body">
             <form id="appointmentForm">
+              <input type="hidden" id="appointmentId">
               <div class="form-group">
                 <label>Title</label>
                 <input type="text" id="title" class="form-control" required>
@@ -41,6 +42,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger" id="deleteAppointmentBtn" style="display: none;">Delete</button>
             <button type="submit" class="btn btn-primary" id="saveAppointmentBtn">Save</button>
           </div>
         </div>
